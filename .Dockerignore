@@ -1,0 +1,6 @@
+.DS_Store
+.env
+__pycache__
+.git/
+LICENSE
+action.yml

@@ -1,0 +1,26 @@
+---
+name: "AWS CodeBuild runner"
+description: "Integrates and invoke AWS CodeBuild with GitHub workflows"
+inputs:
+  aws_region:
+    description: "AWS default region to operate to"
+    required: true
+  codebuild_job_name:
+    description: "CodeBuild project name"
+    required: true
+  codebuild_log_group:
+    description: "CodeBuild project log group name"
+    required: true
+  s3_path:
+    description: "S3 path (including bucket name) where to passthrough repository code to for CodeBuild"
+    required: false
+  override_image_ssm_base:
+    description: "SSM parameter path containing the repository of the docker image that will be used for override image"
+    required: false
+  override_image_tag_prefix:
+    description: "Optional image tag prefix to use for override image. Requires `override_image_ssm_base` input"
+    required: false
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
