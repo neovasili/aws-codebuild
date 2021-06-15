@@ -17,6 +17,9 @@ inputs:
   override_image_ssm_base:
     description: "SSM parameter path containing the repository of the docker image that will be used for override image"
     required: false
+  override_image_tag:
+    description: "Optional image tag override to use for override image. Requires `override_image_ssm_base` input"
+    required: false
   override_image_tag_prefix:
     description: "Optional image tag prefix to use for override image. Requires `override_image_ssm_base` input"
     required: false

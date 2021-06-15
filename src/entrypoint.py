@@ -9,7 +9,12 @@ def main():
         image = None
         commit_id = CommonsHelper.get_commit_id()
         aws_default_region, codebuild_job_name, codebuild_log_group = CommonsHelper.get_mandatory_inputs()
-        s3_path, override_image_ssm_base, override_image_tag_prefix = CommonsHelper.get_optional_inputs()
+        (
+            s3_path,
+            override_image_ssm_base,
+            override_image_tag,
+            override_image_tag_prefix,
+        ) = CommonsHelper.get_optional_inputs()
 
         print("--  START CODEBUILD CUSTOM ACTION   --")
         print("--------------------------------------")
@@ -34,6 +39,7 @@ def main():
             image = ssm_service.get_override_image(
                 ssm_parameter=override_image_ssm_base,
                 commit_id=commit_id,
+                tag=override_image_tag,
                 tag_prefix=override_image_tag_prefix,
             )
 

@@ -60,10 +60,12 @@ class CommonsHelper:
     def get_optional_inputs():
         s3_path = None
         override_image_ssm_base = None
+        override_image_tag = None
         override_image_tag_prefix = None
 
         s3_path = CommonsHelper.get_input(input_name="s3_path")
         override_image_ssm_base = CommonsHelper.get_input(input_name="override_image_ssm_base")
+        override_image_tag = CommonsHelper.get_input(input_name="override_image_tag")
         override_image_tag_prefix = CommonsHelper.get_input(input_name="override_image_tag_prefix")
 
-        return s3_path, override_image_ssm_base, override_image_tag_prefix
+        return s3_path, override_image_ssm_base, override_image_tag, override_image_tag_prefix
