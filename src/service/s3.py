@@ -76,10 +76,3 @@ class S3Service:
         )
 
         return s3_file_path
-        # for filename in files_to_upload:
-        #     print(f"Uploading to S3 {s3_path}/{commit_id}/{filename}...")
-        #     self.s3_resource.meta.client.upload_file(
-        #         Filename=filename,
-        #         Bucket=bucket_name,
-        #         Key=f"{key_base_path}/{commit_id}/{filename}",
-        #     )
