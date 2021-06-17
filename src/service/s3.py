@@ -1,5 +1,6 @@
 import os
 import boto3
+import zipfile
 
 from pathlib import Path
 
@@ -56,10 +57,22 @@ class S3Service:
         bucket_name = s3_path.split("/")[0]
         key_base_path = "".join(s3_path.split("/")[1:])
 
+        s3_file_name = "source.zip"
+
+        s3_file = zipfile.ZipFile(s3_file_name, "w" )
+
         for filename in files_to_upload:
-            print(f"Uploading to S3 {s3_path}/{commit_id}/{filename}...")
-            self.s3_resource.meta.client.upload_file(
-                Filename=filename,
-                Bucket=bucket_name,
-                Key=f"{key_base_path}/{commit_id}/{filename}",
-            )
+            s3_file.write(filename)
+
+        s3_file.close()
+
+        s3_file_path = f"{s3_path}/{commit_id}/{s3_file_name}"
+
+        print(f"Uploading to S3 {s3_file_path}...")
+        self.s3_resource.meta.client.upload_file(
+            Filename=s3_file_name,
+            Bucket=bucket_name,
+            Key=f"{key_base_path}/{commit_id}/{s3_file_name}",
+        )
+
+        return s3_file_path
