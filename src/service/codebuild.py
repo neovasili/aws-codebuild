@@ -49,7 +49,13 @@ class CodeBuildService:
     def get_current_build_phase(phases: list):
         return phases[-1]["phaseType"]
 
-    def invoke_codebuild_job(self, commit_id: str, image: str = None):
+    def invoke_codebuild_job(
+        self,
+        commit_id: str,
+        s3_path: str = None,
+        buildspec: str = None,
+        image: str = None,
+    ):
         environment_variables = [
             {
                 "name": "COMMIT_ID",
@@ -70,18 +76,30 @@ class CodeBuildService:
 
         response = None
 
-        if image is None:
-            response = self.codebuild_client.start_build(
-                projectName=self.codebuild_job_name,
-                environmentVariablesOverride=environment_variables,
-            )
+        codebuild_arguments = {
+            "projectName": self.codebuild_job_name,
+            "environmentVariablesOverride": environment_variables,
+        }
 
-        else:
-            response = self.codebuild_client.start_build(
-                projectName=self.codebuild_job_name,
-                environmentVariablesOverride=environment_variables,
-                imageOverride=image,
-            )
+        if buildspec is not None:
+            buildspec_content = ""
+
+            with open(buildspec, "r") as file:
+                buildspec_content = file.read()
+
+            codebuild_arguments["buildspecOverride"] = buildspec_content
+
+        if image is not None:
+            codebuild_arguments["imageOverride"] = image
+
+        if s3_path is not None:
+            codebuild_arguments["sourceTypeOverride"] = "S3"
+            codebuild_arguments["sourceLocationOverride"] = s3_path
+
+        response = self.codebuild_client.start_build(
+            **codebuild_arguments,
+        )
+
         self.build_id = response["build"]["id"]
 
         return self.build_id
