@@ -63,7 +63,7 @@ repos:
       - id: pydocstyle
         name: Pycodestyle linter
         args:
-          - --ignore=D100,D101,D102,D103,D104,D107
+          - --ignore=D100,D101,D102,D103,D104,D107,D203,D211
   - repo: https://github.com/psf/black
     rev: 20.8b1
     hooks:
