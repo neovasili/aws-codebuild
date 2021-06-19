@@ -27,7 +27,7 @@ inputs:
     description: "Optional image tag override to use for override image. Requires `override_image_ssm_base` input"
     required: false
   override_image_tag_prefix:
-    description: "Optional image tag prefix to use for override image. Requires `override_image_ssm_base` input"
+    description: "Optional image tag prefix to use for override image. Requires `override_image_ssm_base` input. Overridden by `override_image_tag` if specified"
     required: false
 
 runs:
