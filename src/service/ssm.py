@@ -1,8 +1,11 @@
 import boto3
+import logging
 
 
 class SSMService:
-    def __init__(self, region: str):
+    def __init__(self, region: str, logger: logging.Logger):
+        self.__logger = logger
+
         self.ssm_client = boto3.client("ssm", region_name=region)
 
     def get_override_image(self, ssm_parameter: str, commit_id: str, tag: str = None, tag_prefix: str = None):
@@ -11,11 +14,18 @@ class SSMService:
         )
 
         image = response["Parameter"]["Value"]
+        full_image_uri = image
 
         if tag is not None:
-            return f"{image}:{tag}"
+            self.__logger.debug(f"Going to use image with tag {tag}")
+            full_image_uri = f"{full_image_uri}:{tag}"
 
         if tag_prefix is not None:
-            return f"{image}:{tag_prefix}{commit_id}"
+            self.__logger.debug(f"Going to use image with tag prefix {tag_prefix} and commit id {commit_id}")
+            full_image_uri = f"{full_image_uri}:{tag_prefix}_{commit_id}"
 
-        return f"{image}:{commit_id}"
+        self.__logger.debug(f"Going to use image with commit id {commit_id}")
+        full_image_uri = f"{full_image_uri}:{commit_id}"
+        self.__logger.debug(f"Full image URI: {full_image_uri}")
+
+        return full_image_uri

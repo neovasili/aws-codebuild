@@ -1,15 +1,16 @@
 import os
 import time
 import boto3
-import datetime
+import logging
 
 
 class CodeBuildService:
-    def __init__(self, region: str, codebuild_job_name: str, build_log_group_name: str):
+    def __init__(self, region: str, codebuild_job_name: str, build_log_group_name: str, logger: logging.Logger):
         self.region = region
         self.codebuild_job_name = codebuild_job_name
         self.build_log_group_name = build_log_group_name
         self.build_id = None
+        self.__logger = logger
 
         self.codebuild_client = boto3.client("codebuild", region_name=self.region)
         self.logs_client = boto3.client("logs", region_name=region)
@@ -74,7 +75,12 @@ class CodeBuildService:
         if len(custom_environment_variables) > 0:
             environment_variables.extend(custom_environment_variables)
 
-        response = None
+        self.__logger.debug(f"CodeBuild project: {self.codebuild_job_name}")
+        self.__logger.debug(
+            f"""
+            Environment variables: {[f'''{env_var['name']}: {env_var['value']}''' for env_var in environment_variables]}
+            """
+        )
 
         codebuild_arguments = {
             "projectName": self.codebuild_job_name,
@@ -82,6 +88,7 @@ class CodeBuildService:
         }
 
         if buildspec is not None:
+            self.__logger.debug(f"Use buildspec: {buildspec}")
             buildspec_content = ""
 
             with open(buildspec, "r") as file:
@@ -90,11 +97,15 @@ class CodeBuildService:
             codebuild_arguments["buildspecOverride"] = buildspec_content
 
         if image is not None:
+            self.__logger.debug(f"Use image: {image}")
             codebuild_arguments["imageOverride"] = image
 
         if s3_path is not None:
+            self.__logger.debug(f"Use s3 source: {s3_path}")
             codebuild_arguments["sourceTypeOverride"] = "S3"
             codebuild_arguments["sourceLocationOverride"] = s3_path
+
+        response = None
 
         response = self.codebuild_client.start_build(
             **codebuild_arguments,
@@ -102,34 +113,32 @@ class CodeBuildService:
 
         self.build_id = response["build"]["id"]
 
+        self.__logger.debug(f"Build ID: {self.build_id}")
+
         return self.build_id
 
     def get_log_events(self, start_time: int):
         response = None
         build_id = self.build_id.split(":")[1]
 
+        get_log_events_arguments = {
+            "logGroupName": self.build_log_group_name,
+            "logStreamName": build_id,
+            "startFromHead": True,
+        }
+
         try:
             if start_time is not None:
-                response = self.logs_client.get_log_events(
-                    logGroupName=self.build_log_group_name,
-                    logStreamName=build_id,
-                    startTime=start_time,
-                    startFromHead=True,
-                )
-            else:
-                response = self.logs_client.get_log_events(
-                    logGroupName=self.build_log_group_name,
-                    logStreamName=build_id,
-                    startFromHead=True,
-                )
+                get_log_events_arguments["startTime"] = start_time
+
+            response = self.logs_client.get_log_events(**get_log_events_arguments)
             events = response["events"]
 
             if len(events) > 0:
                 for event in events:
                     start_time = event["timestamp"]
-                    formated_time = datetime.datetime.fromtimestamp(start_time / 1000).strftime("%Y-%m-%d %H:%M:%S")
                     message = event["message"].replace("\n", "")
-                    print(f"{formated_time} -- {message}")
+                    self.__logger.debug(message)
 
         except Exception:
             pass
@@ -152,7 +161,7 @@ class CodeBuildService:
 
             if current_phase != build_current_phase:
                 build_current_phase = current_phase
-                print(f"Build phase: {build_current_phase}")
+                self.__logger.info(f"Build phase: {build_current_phase}")
 
             start_time = self.get_log_events(start_time=start_time)
 

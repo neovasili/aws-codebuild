@@ -2,5 +2,6 @@
 .env
 __pycache__
 .git/
+.github/
 LICENSE
 action.yml

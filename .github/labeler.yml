@@ -1,0 +1,27 @@
+---
+ci:
+    - .github/*
+    - .github/**/*
+
+documentation:
+    - ./*.md
+    - docs/*
+    - docs/**/*
+
+app:
+    - src/*
+    - src/**/*
+
+api:
+    - action.yml
+
+tests:
+    - tests/*
+    - tests/**/*
+
+docker:
+    - Dockerfile
+    - .Dockerignore
+
+dependencies:
+    - requirements.txt
