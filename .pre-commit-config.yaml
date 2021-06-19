@@ -1,0 +1,74 @@
+---
+fail_fast: true
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-vcs-permalinks
+      - id: detect-aws-credentials
+        args: [--allow-missing-credentials]
+      - id: no-commit-to-branch
+  - repo: https://github.com/sirosen/check-jsonschema
+    rev: 0.3.0
+    hooks:
+      - id: check-github-workflows
+        name: Check github workflows format
+  - repo: https://github.com/detailyang/pre-commit-shell
+    rev: v1.0.6
+    hooks:
+      - id: shell-lint
+        args: [--format=json]
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.19.0
+    hooks:
+      - id: yamllint
+        name: Yaml lintern
+        files: \.(yaml|yml|template)$
+        args:
+          [
+            --config-data,
+            "{extends: default, rules: {line-length: {max: 120, level: warning}}, yaml-files: ['*.yaml', '*.yml'], ignore: 'images/**/*.yml'}",
+          ]
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-nodejs
+    rev: v1.1.1
+    hooks:
+      - id: dockerfile_lint
+        name: Dockerfile linter
+  - repo: https://github.com/markdownlint/markdownlint
+    rev: v0.11.0
+    hooks:
+      - id: markdownlint
+        args: [--rules, "~MD013"]
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+    rev: v1.2.1
+    hooks:
+      - id: python-safety-dependencies-check
+        name: Python dependencies security check
+  - repo: https://github.com/PyCQA/flake8
+    rev: 3.9.1
+    hooks:
+      - id: flake8
+        name: Flake8 linter
+  - repo: https://github.com/PyCQA/pydocstyle
+    rev: 6.0.0
+    hooks:
+      - id: pydocstyle
+        name: Pycodestyle linter
+        args:
+          - --ignore=D100,D101,D102,D103,D104,D107
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+      - id: black
+        name: Black python formatter
+        language_version: python
+        args:
+          - --line-length=120
