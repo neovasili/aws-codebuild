@@ -47,14 +47,16 @@ class S3Service:
             path = subdir[0]
             for files_set in subdir[1:]:
                 for file in files_set:
+                    file_path = f"{path}/{file}"
                     if path == "./":
                         file_path = f"{path}{file}"
-                    else:
-                        file_path = f"{path}/{file}"
-                    if Path(file_path).is_file():
-                        if not S3Service.to_ignore(ignore_patterns=ignore_patterns, element=file_path):
-                            file_path = file_path[2:]
-                            files_to_upload.append(file_path)
+
+                    if Path(file_path).is_file() and not S3Service.to_ignore(
+                        ignore_patterns=ignore_patterns,
+                        element=file_path,
+                    ):
+                        file_path = file_path[2:]
+                        files_to_upload.append(file_path)
 
         return files_to_upload
 
