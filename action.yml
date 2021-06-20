@@ -32,4 +32,4 @@ inputs:
 
 runs:
   using: "docker"
-  image: "Dockerfile"
+  image: public.ecr.aws/neovasili/aws-codebuild:1.1.0
