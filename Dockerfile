@@ -2,7 +2,7 @@ FROM python:3.9.5-buster
 
 LABEL maintainer="Juan Manuel Ruiz Fernández"
 LABEL name="Docker image for AWS CodeBuild GitHub action"
-LABEL version="v1.1.0"
+LABEL version="v1.1.1"
 
 RUN mkdir /opt/action
 

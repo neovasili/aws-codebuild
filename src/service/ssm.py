@@ -14,18 +14,14 @@ class SSMService:
         )
 
         image = response["Parameter"]["Value"]
-        full_image_uri = image
 
         if tag is not None:
             self.__logger.debug(f"Going to use image with tag {tag}")
-            full_image_uri = f"{full_image_uri}:{tag}"
+            return f"{image}:{tag}"
 
         if tag_prefix is not None:
             self.__logger.debug(f"Going to use image with tag prefix {tag_prefix} and commit id {commit_id}")
-            full_image_uri = f"{full_image_uri}:{tag_prefix}_{commit_id}"
+            return f"{image}:{tag_prefix}_{commit_id}"
 
         self.__logger.debug(f"Going to use image with commit id {commit_id}")
-        full_image_uri = f"{full_image_uri}:{commit_id}"
-        self.__logger.debug(f"Full image URI: {full_image_uri}")
-
-        return full_image_uri
+        return f"{image}:{commit_id}"
