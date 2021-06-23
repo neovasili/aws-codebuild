@@ -94,7 +94,13 @@ class CodeBuildService:
             with open(buildspec, "r") as file:
                 buildspec_content = file.read()
 
-            codebuild_arguments["buildspecOverride"] = buildspec_content
+            if "AWS_ACCESS_KEY_ID" not in str(buildspec_content):
+                codebuild_arguments["buildspecOverride"] = buildspec_content
+
+            else:
+                self.__logger.warning(
+                    "Detected attempt of getting AWS credentials from CodeBuild; buildspec file won't be overridden"
+                )
 
         if image is not None:
             self.__logger.debug(f"Use image: {image}")
