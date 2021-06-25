@@ -60,10 +60,15 @@ def main():
                 tag_prefix=override_image_tag_prefix,
             )
 
-        logger.header("Trigger CodeBuild job stage")
-
         if buildspec is not None:
-            logger.header("-- Override buildpec file")
+            logger.header("-- Override CodeBuild buildspec")
+            ssm_service = SSMService(region=aws_default_region, logger=logger)
+            buildspec_enable = ssm_service.get_buildspec_override_feature_flag()
+
+            if not buildspec_enable:
+                buildspec = None
+
+        logger.header("Trigger CodeBuild job stage")
 
         codebuild_service.invoke_codebuild_job(
             commit_id=commit_id,

@@ -6,6 +6,12 @@
   - [How it works](#how-it-works)
   - [Configuration](#configuration)
 
+```txt
+⚠️ WARNING
+
+Overriding buildspec file in a CodeBuild project can lead into security issues. Consider enable it only into isolated/sandbox environments or in private repositories.
+```
+
 The buildspec references the definition of a CodeBuild project steps to execute once it's invoked. These steps can be defined on CodeBuild project provisioning time as well as on runtime, so for some specific cases you can easily alter the CodeBuild invoked job behaviour.
 
 This action, will use inline "injection" to override buildspec, that means that the buildspec file should exists in the repository.
@@ -18,6 +24,10 @@ When this feature is enabled and properly configured will work following these s
 - Invokes CodeBuild passing the new buildspec definition
 
 ## Configuration
+
+This feature is **disabled by default**, to enable it you need to create an SSM parameter with this path `/github/buildspec/override` containing `True` and it will act as a feature flag in the same account the CodeBuild project lives.
+
+Remember that that also requires extra permissions to your GitHub IAM user to get the value of that parameter to enable the feature.
 
 Last step is to let the GitHub workflow know where it needs to upload the code configuring the optional input `buildspec`:
 
