@@ -99,11 +99,11 @@ class CodeBuildService:
 
             else:
                 self.__logger.warning(
-                    "Detected attempt of getting AWS credentials from CodeBuild; buildspec file won't be overridden"
+                    "Detected obvious attempt of getting AWS credentials from CodeBuild; buildspec file won't be overridden"
                 )
 
         if image is not None:
-            self.__logger.debug(f"Use image: {image}")
+            self.__logger.debug(f"Use image with tag: {image.split(':')[1]}")
             codebuild_arguments["imageOverride"] = image
 
         if s3_path is not None:
